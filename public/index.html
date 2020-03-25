@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>kGenProg Online D
+        mo</title>
+</head>
+<body>
+<noscript>
+    <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
+        Please enable it to continue.</strong>
+</noscript>
+
+<div>
+
+    <textarea id="src" rows="30" cols="50"></textarea>
+    <textarea id="test" rows="30" cols="50"></textarea>
+    <input id="run" type="button" value="run">
+
+    <br>
+    <textarea id="console" rows="30" cols="50"></textarea>
+    <input id="refresh" type="button" value="#DEBUG refresh">
+
+</div>
+</body>
+
+<script>
+    var key = 0;
+    loadDefaultSrc = function () {
+        fetch('./default-src.java')
+            .then(resp => resp.text())
+            .then(text => document.querySelector('#src').value = text);
+    };
+    loadDefaultTest = function () {
+        fetch('./default-test.java')
+            .then(resp => resp.text())
+            .then(text => document.querySelector('#test').value = text);
+    };
+
+    assignRun = function () {
+        document.querySelector('#run').addEventListener('click', () => {
+            let src = document.querySelector('#src').value;
+            let test = document.querySelector('#test').value;
+            src = src.replace("&gt;", ">");
+            src = src.replace("&lt;", "<");
+            test = test.replace("&gt;", ">");
+            test = test.replace("&lt;", "<");
+            const data = {src: src, test: test};
+            console.log(data);
+
+            fetch('./api/submission',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(checkFetchError)
+                .then(text => key = text)
+                .catch(err => console.error(err))
+        });
+    };
+
+    assignDebugRefresh = function () {
+        document.querySelector('#refresh').addEventListener('click', () => {
+            if (key == 0) {
+                return;
+            }
+            fetch('./api/status/' + key)
+                .then(checkFetchError)
+                .then(text => {
+                    document.querySelector('#console').innerHTML = text.stdout;
+                    x = text;
+                })
+                .catch(err => console.error(err));
+            //document.querySelector('#console').innerHTML = 'aaaaaaaaaa';/////////
+        });
+    };
+
+    checkFetchError = function (resp) {
+        if (resp.status >= 200 && resp.status <= 299) {
+            return resp.json();
+        }
+        throw Error(resp.statusText);
+    };
+
+    setInterval(() => {
+        if (key == 0) {
+            return;
+        }
+        fetch('./api/status/' + key)
+            .then(checkFetchError)
+            .then(text => {
+                document.querySelector('#console').innerHTML = text.stdout;
+                const area = document.querySelector('#console');
+                area.scrollTop = area.scrollHeight;
+            })
+            .catch(err => console.error(err));
+    }, 1000);
+
+
+    loadDefaultSrc();
+    loadDefaultTest();
+    assignRun();
+    assignDebugRefresh();
+
+</script>
+</html>
