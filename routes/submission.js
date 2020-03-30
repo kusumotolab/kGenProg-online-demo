@@ -4,7 +4,7 @@ const path = require('path');
 const child = require('child_process');
 const fs = require('fs').promises;
 const submissionBase = path.resolve('./tmp');
-const kgp = path.resolve('./kGenProg-1.5.5.jar');  //環境に合わせる
+const kgp = path.resolve('./bin/kgp.jar');
 let key = 0;
 
 async function deploy(file, data) {
