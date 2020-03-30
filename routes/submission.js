@@ -3,7 +3,7 @@ const router = express.Router();
 const path = require('path');
 const child = require('child_process');
 const fs = require('fs').promises;
-const submissionBase = path.resolve('../../test-nodejs');  //環境に合わせる
+const submissionBase = path.resolve('./tmp');
 const kgp = path.resolve('./kGenProg-1.5.5.jar');  //環境に合わせる
 let key = 0;
 
