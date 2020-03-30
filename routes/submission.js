@@ -3,9 +3,10 @@ const router = express.Router();
 const path = require('path');
 const child = require('child_process');
 const fs = require('fs').promises;
+const crypto = require('crypto');
+require('date-utils');
 const submissionBase = path.resolve('./tmp');
 const kgp = path.resolve('./bin/kgp.jar');
-let key = 0;
 
 async function deploy(file, data) {
   try {
@@ -39,7 +40,7 @@ function deployConfig(dir, body) {
     deploy(testFile, body.test)]);
 }
 
-function runJava(dir) {
+function execJava(dir) {
   return child.spawn('java',
       ['-jar', kgp, '-r', './', '-s', 'src/main', '-t', 'src/test'],
       {cwd: dir});
@@ -66,19 +67,26 @@ function writeStdout(spawn, dir) {
 }
 
 function runKgp(dir) {
-  const spawn = runJava(dir);
+  const spawn = execJava(dir);
   writeStdout(spawn, dir);
   monitorKgp(spawn);
 }
 
 router.post('/', async (req, res) => {
+  const date = new Date().toFormat('YYYYMMDDHH24MISS');
+  //todo 短いハッシュにする
+  const key = crypto.createHash('md5').update(date + req.body.src + req.body.test).digest('hex');
   const submissionDir = path.join(submissionBase, key.toString());
 
-  console.log(`accept submission${key}`);
-  res.send(key.toString());
-  key++;
+  console.log(`receive submission ${key}`);
+  res.header('Content-Type', 'application/json; charset=utf-8');
+  res.send({
+    'key': key.toString(),
+    'status': 'starting',
+    'stdout': ''
+  });
   try {
-    console.log("-----------------" + req.body.src);
+    // console.log("-----------------" + req.body.src);
     await deployConfig(submissionDir, req.body);
     runKgp(submissionDir);
   } catch (e) {
