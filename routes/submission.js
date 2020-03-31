@@ -5,7 +5,7 @@ const child = require('child_process');
 const fs = require('fs').promises;
 const crypto = require('crypto');
 require('date-utils');
-const submissionBase = path.resolve('./tmp');
+const submissionBase = path.resolve('./tmp/kgp-od');
 const kgp = path.resolve('./bin/kgp.jar');
 const processing = Array();
 
@@ -111,3 +111,4 @@ router.post('/', async (req, res) => {
 
 module.exports = router;
 module.exports.processing = processing;
+module.exports.submissionBase = submissionBase;

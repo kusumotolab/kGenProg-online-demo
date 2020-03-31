@@ -3,7 +3,7 @@ const router = express.Router();
 const path = require('path');
 const fs = require('fs').promises;
 const processing = require('./submission').processing;
-const submissionBase = path.resolve('./tmp');
+const submissionBase = require('./submission').submissionBase;
 
 async function sendStatus(res, key) {
   const stdout = await readStdout(key);
@@ -23,7 +23,7 @@ function readStdout(key) {
 
 router.get('/:key', async (req, res) => {
   try {
-    sendStatus(res, req.params.key, stdout);
+    sendStatus(res, req.params.key);
   } catch (e) {
     res.status(e.status || 500);
     res.render(req.params.key);
