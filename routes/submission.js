@@ -49,10 +49,10 @@ function execJava(dir) {
 
 function traceKgp(spawn, dir) {
   spawn.stderr.on('data', (data) => {
-    console.log('STDERR', data.toString());
+    console.log(`[${path.basename(dir)}]`, '[kgp] STDERR', data.toString());
   });
   spawn.on('close', (code) => {
-    console.log('CODE', code);
+    console.log(`[${path.basename(dir)}]`, '[kgp] finish with code', code);
     const index = processing.findIndex(e => e === path.dirname(dir));
     processing.splice(index, 1);
   });
@@ -74,7 +74,6 @@ function runKgp(dir) {
   writeStdout(spawn, dir);
   traceKgp(spawn, dir);
   processing.push(path.basename(dir));
-  console.log(path.basename(dir));
 }
 
 function createKey(req) {
@@ -86,10 +85,10 @@ function createKey(req) {
 
 function acceptSubmission(req, res) {
   const key = createKey(req);
-  console.log(`accept submission ${key}`);
+  console.log(`[${key}]`, 'accept submission');
   res.header('Content-Type', 'application/json; charset=utf-8');
   res.send({
-    'key': key.toString(),
+    'key': key,
     'status': 'starting',
     'stdout': ''
   });
