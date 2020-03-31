@@ -7,6 +7,7 @@ const crypto = require('crypto');
 require('date-utils');
 const submissionBase = path.resolve('./tmp');
 const kgp = path.resolve('./bin/kgp.jar');
+const processing = Array();
 
 async function deploy(file, data) {
   try {
@@ -46,12 +47,15 @@ function execJava(dir) {
       {cwd: dir});
 }
 
-function traceKgp(spawn) {
+function traceKgp(spawn, dir) {
   spawn.stderr.on('data', (data) => {
     console.log('STDERR', data.toString());
   });
   spawn.on('close', (code) => {
     console.log('CODE', code);
+    processing.filter(e => {
+      return e != path.basename(dir);
+    });
   });
 }
 
@@ -69,13 +73,20 @@ function writeStdout(spawn, dir) {
 function runKgp(dir) {
   const spawn = execJava(dir);
   writeStdout(spawn, dir);
-  traceKgp(spawn);
+  traceKgp(spawn, dir);
+  processing.push(path.basename(dir));
+  console.log(path.basename(dir));
+}
+
+function createKey(req) {
+  const date = new Date().toFormat('YYYYMMDDHH24MISS');
+  //todo 短いハッシュにする
+  return crypto.createHash('md5').update(
+      date + req.body.src + req.body.test).digest('hex');
 }
 
 function acceptSubmission(req, res) {
-  const date = new Date().toFormat('YYYYMMDDHH24MISS');
-  //todo 短いハッシュにする
-  const key = crypto.createHash('md5').update(date + req.body.src + req.body.test).digest('hex');
+  const key = createKey(req);
   console.log(`accept submission ${key}`);
   res.header('Content-Type', 'application/json; charset=utf-8');
   res.send({
@@ -84,7 +95,7 @@ function acceptSubmission(req, res) {
     'stdout': ''
   });
 
-  return path.join(submissionBase, key.toString());
+  return path.join(submissionBase, key);
 }
 
 router.post('/', async (req, res) => {
@@ -100,3 +111,4 @@ router.post('/', async (req, res) => {
 });
 
 module.exports = router;
+module.exports.processing = processing;
