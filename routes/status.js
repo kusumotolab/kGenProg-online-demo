@@ -5,7 +5,8 @@ const fs = require('fs').promises;
 const processing = require('./submission').processing;
 const submissionBase = path.resolve('./tmp');
 
-function sendStatus(res, key, stdout) {
+async function sendStatus(res, key) {
+  const stdout = await readStdout(key);
   const status = processing.includes(key) ? 'processing' : 'done';
   res.header('Content-Type', 'application/json; charset=utf-8');
   res.send({
@@ -15,14 +16,13 @@ function sendStatus(res, key, stdout) {
   });
 }
 
-async function readStdout(key) {
+function readStdout(key) {
   const file = path.join(submissionBase, key, 'stdout.txt');
   return fs.readFile(file, 'utf-8');
 }
 
 router.get('/:key', async (req, res) => {
   try {
-    const stdout = await readStdout(req.params.key);
     sendStatus(res, req.params.key, stdout);
   } catch (e) {
     res.status(e.status || 500);
