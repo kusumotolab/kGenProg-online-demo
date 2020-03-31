@@ -53,9 +53,8 @@ function traceKgp(spawn, dir) {
   });
   spawn.on('close', (code) => {
     console.log('CODE', code);
-    processing.filter(e => {
-      return e != path.basename(dir);
-    });
+    const index = processing.findIndex(e => e === path.dirname(dir));
+    processing.splice(index, 1);
   });
 }
 
