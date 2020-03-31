@@ -78,10 +78,10 @@ function runKgp(dir) {
 }
 
 function createKey(req) {
-  const date = new Date().toFormat('YYYYMMDDHH24MISS');
+  const datetime = new Date().toFormat('YYYYMMDDHH24MISS');
   //todo 短いハッシュにする
   return crypto.createHash('md5').update(
-      date + req.body.src + req.body.test).digest('hex');
+      datetime + req.body.src + req.body.test).digest('hex');
 }
 
 function acceptSubmission(req, res) {
