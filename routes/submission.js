@@ -28,14 +28,14 @@ function getClassName(src) {
   return classDeclaration ? classDeclaration[1] : '';
 }
 
-function extractName(src) {
+function getFQN(src) {
   return path.join(getPackageName(src).replace('.', '/'),
       getClassName(src) + '.java');
 }
 
 function deployConfig(dir, body) {
-  const srcFile = path.join(dir, 'src/main', extractName(body.src));
-  const testFile = path.join(dir, 'src/test', extractName(body.test));
+  const srcFile = path.join(dir, 'src/main', getFQN(body.src));
+  const testFile = path.join(dir, 'src/test', getFQN(body.test));
   return Promise.all([deploy(srcFile, body.src),
     deploy(testFile, body.test)]);
 }
@@ -46,7 +46,7 @@ function execJava(dir) {
       {cwd: dir});
 }
 
-function monitorKgp(spawn) {
+function traceKgp(spawn) {
   spawn.stderr.on('data', (data) => {
     console.log('STDERR', data.toString());
   });
@@ -69,24 +69,28 @@ function writeStdout(spawn, dir) {
 function runKgp(dir) {
   const spawn = execJava(dir);
   writeStdout(spawn, dir);
-  monitorKgp(spawn);
+  traceKgp(spawn);
 }
 
-router.post('/', async (req, res) => {
+function acceptSubmission(req, res) {
   const date = new Date().toFormat('YYYYMMDDHH24MISS');
   //todo 短いハッシュにする
   const key = crypto.createHash('md5').update(date + req.body.src + req.body.test).digest('hex');
-  const submissionDir = path.join(submissionBase, key.toString());
-
-  console.log(`receive submission ${key}`);
+  console.log(`accept submission ${key}`);
   res.header('Content-Type', 'application/json; charset=utf-8');
   res.send({
     'key': key.toString(),
     'status': 'starting',
     'stdout': ''
   });
+
+  return path.join(submissionBase, key.toString());
+}
+
+router.post('/', async (req, res) => {
   try {
     // console.log("-----------------" + req.body.src);
+    const submissionDir = acceptSubmission(req, res);
     await deployConfig(submissionDir, req.body);
     runKgp(submissionDir);
   } catch (e) {
