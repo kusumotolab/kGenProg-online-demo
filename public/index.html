@@ -102,7 +102,7 @@
                     body: JSON.stringify(data),
                 })
                 .then(checkFetchError)
-                .then(text => key = text)
+                .then(text => key = text.key)
                 .catch(err => console.error(err))
         });
     };

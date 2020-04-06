@@ -2,18 +2,31 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const fs = require('fs').promises;
-const submissionBase = path.resolve('../../test-nodejs');  //環境に合わせる
+const processing = require('./submission').processing;
+const submissionBase = require('./submission').submissionBase;
+
+async function sendStatus(res, key) {
+  const stdout = await readStdout(key);
+  const status = processing.includes(key) ? 'processing' : 'done';
+  res.header('Content-Type', 'application/json; charset=utf-8');
+  res.send({
+    'key': key,
+    'status': status,
+    'stdout': stdout
+  });
+}
+
+function readStdout(key) {
+  const file = path.join(submissionBase, key, 'stdout.txt');
+  return fs.readFile(file, 'utf-8');
+}
 
 router.get('/:key', async (req, res) => {
-  const outFile = path.join(submissionBase, req.params.key.toString(),
-      'stdout.txt');
   try {
-    const data = await fs.readFile(outFile, 'utf-8')
-    res.header('Content-Type', 'application/json; charset=utf-8');
-    res.send({'stdout': data});
-  } catch(e) {
-    res.status(404);
-    res.end('not found key: ' + req.params.key.toString());
+    sendStatus(res, req.params.key);
+  } catch (e) {
+    res.status(e.status || 500);
+    res.render(req.params.key);
     console.log(e);
     throw e;
   }

@@ -3,9 +3,11 @@ const router = express.Router();
 const path = require('path');
 const child = require('child_process');
 const fs = require('fs').promises;
-const submissionBase = path.resolve('../../test-nodejs');  //環境に合わせる
-const kgp = path.resolve('./kGenProg-1.5.5.jar');  //環境に合わせる
-let key = 0;
+const crypto = require('crypto');
+require('date-utils');
+const submissionBase = path.resolve('./tmp/kgp-od');
+const kgp = path.resolve('./bin/kgp.jar');
+const processing = Array();
 
 async function deploy(file, data) {
   try {
@@ -27,30 +29,32 @@ function getClassName(src) {
   return classDeclaration ? classDeclaration[1] : '';
 }
 
-function extractName(src) {
+function getFQN(src) {
   return path.join(getPackageName(src).replace('.', '/'),
       getClassName(src) + '.java');
 }
 
 function deployConfig(dir, body) {
-  const srcFile = path.join(dir, 'src/main', extractName(body.src));
-  const testFile = path.join(dir, 'src/test', extractName(body.test));
+  const srcFile = path.join(dir, 'src/main', getFQN(body.src));
+  const testFile = path.join(dir, 'src/test', getFQN(body.test));
   return Promise.all([deploy(srcFile, body.src),
     deploy(testFile, body.test)]);
 }
 
-function runJava(dir) {
+function execJava(dir) {
   return child.spawn('java',
       ['-jar', kgp, '-r', './', '-s', 'src/main', '-t', 'src/test'],
       {cwd: dir});
 }
 
-function monitorKgp(spawn) {
+function traceKgp(spawn, dir) {
   spawn.stderr.on('data', (data) => {
-    console.log('STDERR', data.toString());
+    console.log(`[${path.basename(dir)}]`, '[kgp] STDERR', data.toString());
   });
   spawn.on('close', (code) => {
-    console.log('CODE', code);
+    console.log(`[${path.basename(dir)}]`, '[kgp] finish with code', code);
+    const index = processing.findIndex(e => e === path.dirname(dir));
+    processing.splice(index, 1);
   });
 }
 
@@ -66,19 +70,36 @@ function writeStdout(spawn, dir) {
 }
 
 function runKgp(dir) {
-  const spawn = runJava(dir);
+  const spawn = execJava(dir);
   writeStdout(spawn, dir);
-  monitorKgp(spawn);
+  traceKgp(spawn, dir);
+  processing.push(path.basename(dir));
+}
+
+function createKey(req) {
+  const datetime = new Date().toFormat('YYYYMMDDHH24MISS');
+  //todo 短いハッシュにする
+  return crypto.createHash('md5').update(
+      datetime + req.body.src + req.body.test).digest('hex');
+}
+
+function acceptSubmission(req, res) {
+  const key = createKey(req);
+  console.log(`[${key}]`, 'accept submission');
+  res.header('Content-Type', 'application/json; charset=utf-8');
+  res.send({
+    'key': key,
+    'status': 'starting',
+    'stdout': ''
+  });
+
+  return path.join(submissionBase, key);
 }
 
 router.post('/', async (req, res) => {
-  const submissionDir = path.join(submissionBase, key.toString());
-
-  console.log(`accept submission${key}`);
-  res.send(key.toString());
-  key++;
   try {
-    console.log("-----------------" + req.body.src);
+    // console.log("-----------------" + req.body.src);
+    const submissionDir = acceptSubmission(req, res);
     await deployConfig(submissionDir, req.body);
     runKgp(submissionDir);
   } catch (e) {
@@ -88,3 +109,5 @@ router.post('/', async (req, res) => {
 });
 
 module.exports = router;
+module.exports.processing = processing;
+module.exports.submissionBase = submissionBase;
