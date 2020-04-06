@@ -1,0 +1,151 @@
+
+body {
+    font-family: Verdana, sans-serif;
+    background-color: #f5fdff;
+}
+
+.editor {
+    display: inline-block;
+    width: 45%;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    background-color: #c4c4c4;
+}
+
+.editor .ace {
+    height: 35em;
+    width: 100%;
+    border-radius: 0 0 4px 4px;
+}
+
+.editor .header {
+    _display: inline-block;
+    font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    padding: 0 1em;
+    line-height: 20px;
+}
+
+#logo img {
+    width: 60px;
+}
+
+#logo h1 {
+    display: inline;
+    vertical-align: .8em;
+    padding-left: .3em;
+    font-family: Arial;
+    font-size: larger;
+}
+
+#logo a {
+    text-decoration: none;
+    color: #164751;
+}
+
+#ctrl {
+    _display: inline;
+    align: right;
+    height: 3em;
+}
+
+.button {
+    border-radius: 8px;
+    display: inline-block;
+    cursor: pointer;
+    color: #ffffff;
+    font-family: Arial;
+    font-size: 13px;
+    padding: 7px 24px;
+    text-decoration: none;
+}
+
+
+.button:active {
+    position: relative;
+    top: 1px;
+}
+
+.button-run {
+    background: linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
+    background-color: #007dc1;
+    border: 1px solid #124d77;
+    text-shadow: 0px 1px 0px #154682;
+}
+
+.button-run:hover {
+    background: linear-gradient(to bottom, #0061a7 5%, #007dc1 100%);
+    background-color: #0061a7;
+}
+
+.button-other {
+    background: linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
+    background-color: #007dc1;
+    border: 1px solid #124d77;
+    text-shadow: 0px 1px 0px #154682;
+}
+.button-other:hover {
+    background: linear-gradient(to bottom, #0061a7 5%, #007dc1 100%);
+    background-color: #0061a7;
+}
+
+/*--------------------------------------------------------------------------------*/
+#forkongithub a {
+    background: #1b1d21;
+    color: #fff;
+    text-decoration: none;
+    font-family: arial, sans-serif;
+    text-align: center;
+    font-weight: bold;
+    padding: 5px 40px;
+    font-size: 1rem;
+    line-height: 2rem;
+    position: relative;
+    transition: 0.1s;
+    box-shadow:4px 4px 10px rgba(0,0,0,0.2);
+}
+
+#forkongithub a:hover {
+    background: #3b5c9e;
+    color: #fff;
+}
+
+#forkongithub a::before, #forkongithub a::after {
+    content: "";
+    width: 100%;
+    display: block;
+    position: absolute;
+    top: 1px;
+    left: 0;
+    height: 1px;
+    background: #fff;
+}
+
+#forkongithub a::after {
+    bottom: 1px;
+    top: auto;
+}
+
+@media screen and (min-width: 800px) {
+    #forkongithub {
+        position: absolute;
+        display: block;
+        top: 0;
+        right: 0;
+        width: 200px;
+        overflow: hidden;
+        height: 200px;
+        z-index: 9999;
+    }
+
+    #forkongithub a {
+        width: 180px;
+        position: absolute;
+        top: 50px;
+        right: -60px;
+        transform: rotate(45deg);
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        -moz-transform: rotate(45deg);
+        -o-transform: rotate(45deg);
+    }
+}
