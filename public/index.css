@@ -25,6 +25,9 @@ body {
     line-height: 20px;
 }
 
+.editor-console {
+    width: 91%;
+}
 #logo img {
     width: 60px;
 }

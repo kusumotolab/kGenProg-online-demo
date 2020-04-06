@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>ACE in Action</title>
+    <title>kGenProg demo</title>
 </head>
 <body>
 <div id="logo">
@@ -16,7 +16,7 @@
 <div id="ctrl">
     <a href="#" id="run" class="button button-run">Repair</a>
     <a href="#" class="button button-other">Download</a>
-    <a href="#" id="refresh" class="button button-other">#dummy</a>
+    <a href="#" id="refresh" class="button button-other">##refresh</a>
 </div>
 
 <div class="editor">
@@ -28,7 +28,7 @@
     <div id="test" class="ace"></div>
 </div>
 
-<div class="editor">
+<div class="editor editor-console">
     <div class="header">console</div>
     <div id="console" class="ace"></div>
 </div>
@@ -39,7 +39,6 @@
 
 
 <script>
-    let key = 0;
     // let src = ace.edit('src');
     // let test = ace.edit('test');
     // let console = ace.edit('console');
@@ -82,6 +81,25 @@
             .then(text => ace.edit('test').insert(text));
     };
 
+    const refreshConsole = function (key) {
+        fetch('./api/status/' + key)
+            .then(checkFetchError)
+            .then(text => {
+                const editor = ace.edit('console');
+                editor.setValue(text.stdout);
+                editor.clearSelection();
+                editor.scrollToLine(editor.getValue().length);
+
+                if (text.status === 'done') {
+                    return;
+                }
+                setTimeout(() => {
+                    refreshConsole(key);
+                }, 1000);
+
+            })
+            .catch(err => console.error(err));
+    };
     const assignRun = function () {
         document.querySelector('#run').addEventListener('click', () => {
             let src = ace.edit('src').getValue();
@@ -102,8 +120,14 @@
                     body: JSON.stringify(data),
                 })
                 .then(checkFetchError)
-                .then(text => key = text.key)
+                .then(text => {
+                    setTimeout(() => {
+                        refreshConsole(text.key);
+                    }, 500);
+
+                })
                 .catch(err => console.error(err))
+
         });
     };
 
@@ -115,7 +139,9 @@
             fetch('./api/status/' + key)
                 .then(checkFetchError)
                 .then(text => {
-                    ace.edit('console').setValue(text.stdout);
+                    const editor = ace.edit('console');
+                    editor.setValue(text.stdout);
+                    editor.scrollToLine(editor.getValue().length);
                     x = text;
                 })
                 .catch(err => console.error(err));
@@ -130,20 +156,6 @@
         }
         throw Error(resp);
     };
-
-    setInterval(() => {
-        if (key === 0) {
-            return;
-        }
-        fetch('./api/status/' + key)
-            .then(checkFetchError)
-            .then(text => {
-                ace.edit('console').setValue(text.stdout);
-                const area = document.querySelector('#console');
-                area.scrollTop = area.scrollHeight;
-            })
-            .catch(err => console.error(err));
-    }, 1000);
 
 
     loadDefaultSrc();
