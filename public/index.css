@@ -1,32 +1,75 @@
 
 body {
     font-family: Verdana, sans-serif;
-    background-color: #f5fdff;
+    background-color: #eeeeef;
+    margin: 0;
+}
+
+#container {
+    margin: 1em;
+}
+
+.editors {
+    __width: 95%;
+    max-width: 800px;
+    margin-bottom: .5em;
 }
 
 .editor {
     display: inline-block;
-    width: 45%;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 4px;
-    background-color: #c4c4c4;
+    width: 49%;
+    __background-color: #bfbfbf;
+    vertical-align: top;
+    __border: 1px solid #bfbfbf;
+    __border-radius: 4px;
+}
+
+.editor .header {
+    display: inline-block;
+    font-family: arial, sans-serif;
+    font-size: 12px;
+    padding: 0 2em;
+    line-height: 1.4rem;
+    text-align: center;
+    color: #fff;
+    background-color: #61616a;
+    border-radius: 5px 5px 0 0;
+    margin-left: .5rem;
 }
 
 .editor .ace {
     height: 35em;
     width: 100%;
-    border-radius: 0 0 4px 4px;
+    border: 1px solid #a5a5a5;
+    border-radius: 4px;
+
+    /* for tab overlapping */
+    /* this z-index causes focus problem on editor */
+    /*
+    position: relative;
+    height: 350px;
+    top: -1px;
+    z-index: -999;
+     */
 }
 
-.editor .header {
-    _display: inline-block;
-    font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
-    padding: 0 1em;
-    line-height: 20px;
+.editor-right {
+    float: right;
 }
 
 .editor-console {
-    width: 91%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#logo {
+    margin: 0;
+    padding: .1em 1em;
+    background-color: #343440;
+}
+
+#logo:hover {
+    background-color: #61616a;
 }
 #logo img {
     width: 60px;
@@ -36,8 +79,10 @@ body {
     display: inline;
     vertical-align: .8em;
     padding-left: .3em;
-    font-family: Arial;
+    font-family: arial, sans-serif;
     font-size: larger;
+    font-weight: bold;
+    color: #eeeeef;
 }
 
 #logo a {
@@ -47,48 +92,51 @@ body {
 
 #ctrl {
     _display: inline;
-    align: right;
-    height: 3em;
+    margin: 1em 0;
 }
 
 .button {
     border-radius: 8px;
     display: inline-block;
     cursor: pointer;
-    color: #ffffff;
-    font-family: Arial;
+    color: #ffffff;;
+    font-family: arial, sans-serif;
     font-size: 13px;
     padding: 7px 24px;
     text-decoration: none;
+    background: #3473af;
+    border: none;
 }
 
+.button:hover:enabled {
+    -webkit-transform: translateY(-2px);
+    transform: translateY(-2px);
+    transition: .2s;
+}
 
 .button:active {
     position: relative;
     top: 1px;
 }
 
-.button-run {
-    background: linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
-    background-color: #007dc1;
-    border: 1px solid #124d77;
-    text-shadow: 0px 1px 0px #154682;
+.button:focus {
+    -webkit-transform: none;
+    outline: none;
+    transform: none;
 }
 
-.button-run:hover {
-    background: linear-gradient(to bottom, #0061a7 5%, #007dc1 100%);
-    background-color: #0061a7;
+.button:disabled {
+    background-color: gray;
 }
+
+.button-run {
+}
+
 
 .button-other {
-    background: linear-gradient(to bottom, #007dc1 5%, #0061a7 100%);
-    background-color: #007dc1;
-    border: 1px solid #124d77;
-    text-shadow: 0px 1px 0px #154682;
 }
+
 .button-other:hover {
-    background: linear-gradient(to bottom, #0061a7 5%, #007dc1 100%);
-    background-color: #0061a7;
 }
 
 /*--------------------------------------------------------------------------------*/
@@ -103,8 +151,9 @@ body {
     font-size: 1rem;
     line-height: 2rem;
     position: relative;
-    transition: 0.1s;
-    box-shadow:4px 4px 10px rgba(0,0,0,0.2);
+    __transition: 0.1s;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 999;
 }
 
 #forkongithub a:hover {
@@ -137,7 +186,7 @@ body {
         width: 200px;
         overflow: hidden;
         height: 200px;
-        z-index: 9999;
+
     }
 
     #forkongithub a {
