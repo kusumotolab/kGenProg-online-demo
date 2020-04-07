@@ -23,7 +23,7 @@ async function sendStatus(res, key) {
 
 router.get('/:key', async (req, res) => {
   try {
-    sendStatus(res, req.params.key);
+    await sendStatus(res, req.params.key);
   } catch (err) {
     res.status(err.status || 500);
     res.render(req.params.key);
