@@ -14,43 +14,49 @@
 
 <span id="forkongithub"><a href="https://github.com/kusumotolab/kGenProg/">Fork me on GitHub</a></span>
 <div id="ctrl">
-    <a href="#" id="run" class="button button-run">Repair</a>
-    <a href="#" class="button button-other">Download</a>
-    <a href="#" id="refresh" class="button button-other">##refresh</a>
+    <input type="button" id="run" class="button button-run" value="Repair">
+    <input type="button" class="button button-other" value="Download">
+    <input type="button" id="refresh" class="button button-other" value="##refresh">
+</div>
+<br>
+<div class="editors">
+    <div class="editor">
+        <div class="header">Source</div>
+        <div id="src" class="ace"></div>
+    </div>
+    <div class="editor editor-right">
+        <div class="header">Test</div>
+        <div id="test" class="ace"></div>
+    </div>
 </div>
 
-<div class="editor">
-    <div class="header">source</div>
-    <div id="src" class="ace"></div>
-</div>
-<div class="editor">
-    <div class="header">test</div>
-    <div id="test" class="ace"></div>
+<div class="editors">
+    <div class="editor editor-console">
+        <div class="header">Console</div>
+        <div id="console" class="ace"></div>
+    </div>
 </div>
 
-<div class="editor editor-console">
-    <div class="header">console</div>
-    <div id="console" class="ace"></div>
-</div>
-
-<script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
 
 </body>
-
-
+<script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
 <script>
     // let src = ace.edit('src');
     // let test = ace.edit('test');
     // let console = ace.edit('console');
 
-    setupAce = function (key, readonly = false) {
+    const setupAce = function (key, readonly = false) {
         const editor = ace.edit(key);
         editor.setTheme('ace/theme/xcode');
         editor.session.setMode('ace/mode/java');
         editor.setOptions({
             showGutter: true,
-            minLines: 35,
+            minLines: 25,
+            maxLines: 25,
             printMargin: false,
+            animatedScroll: true,
+            scrollPastEnd: 0.5,
+            autoScrollEditorIntoView: true,
         });
 
         if (readonly) {
@@ -61,36 +67,41 @@
             });
             editor.renderer.$cursorLayer.element.style.display = "none"
         }
+
+        return editor;
     };
 
-    setupAce('src');
-    setupAce('test');
-    setupAce('console', readonly = true)
-    ace.edit('console').insert('kgp console here........\n');
-    ace.edit('console').insert('kgp console here........\n');
-    ace.edit('console').insert('kgp console here........\n');
+    const srcEditor = setupAce('src');
+    const testEditor = setupAce('test');
+    const consoleEditor = setupAce('console', readonly = true);
 
-    const loadDefaultSrc = function () {
-        fetch('./default-src.java')
+    const loadDefaultCode = function (uri, editor) {
+        fetch(uri)
             .then(resp => resp.text())
-            .then(text => ace.edit('src').insert(text));
+            .then(text => {
+                editor.insert(text);
+                editor.gotoLine(0);
+            });
     };
-    const loadDefaultTest = function () {
-        fetch('./default-test.java')
-            .then(resp => resp.text())
-            .then(text => ace.edit('test').insert(text));
+
+    const enableExecButton = function () {
+        document.querySelector('#run').disabled = false;
+    };
+
+    const disableExecButton = function () {
+        document.querySelector('#run').disabled = true;
     };
 
     const refreshConsole = function (key) {
         fetch('./api/status/' + key)
             .then(checkFetchError)
             .then(text => {
-                const editor = ace.edit('console');
-                editor.setValue(text.stdout);
-                editor.clearSelection();
-                editor.scrollToLine(editor.getValue().length);
+                consoleEditor.setValue(text.stdout);
+                consoleEditor.clearSelection();
+                consoleEditor.scrollToLine(consoleEditor.getValue().length);
 
                 if (text.status === 'done') {
+                    enableExecButton();
                     return;
                 }
                 setTimeout(() => {
@@ -100,10 +111,11 @@
             })
             .catch(err => console.error(err));
     };
+
     const assignRun = function () {
         document.querySelector('#run').addEventListener('click', () => {
-            let src = ace.edit('src').getValue();
-            let test = ace.edit('test').getValue();
+            let src = srcEditor.getValue();
+            let test = testEditor.getValue();
             src = src.replace("&gt;", ">");
             src = src.replace("&lt;", "<");
             test = test.replace("&gt;", ">");
@@ -111,6 +123,7 @@
             const data = {src: src, test: test};
             console.log(data);
 
+            disableExecButton();
             fetch('./api/submission',
                 {
                     method: 'POST',
@@ -121,6 +134,7 @@
                 })
                 .then(checkFetchError)
                 .then(text => {
+                    consoleEditor.setValue('');
                     setTimeout(() => {
                         refreshConsole(text.key);
                     }, 500);
@@ -128,24 +142,6 @@
                 })
                 .catch(err => console.error(err))
 
-        });
-    };
-
-    const assignDebugRefresh = function () {
-        document.querySelector('#refresh').addEventListener('click', () => {
-            if (key === 0) {
-                return;
-            }
-            fetch('./api/status/' + key)
-                .then(checkFetchError)
-                .then(text => {
-                    const editor = ace.edit('console');
-                    editor.setValue(text.stdout);
-                    editor.scrollToLine(editor.getValue().length);
-                    x = text;
-                })
-                .catch(err => console.error(err));
-            //document.querySelector('#console').innerHTML = 'aaaaaaaaaa';/////////
         });
     };
 
@@ -158,10 +154,9 @@
     };
 
 
-    loadDefaultSrc();
-    loadDefaultTest();
+    loadDefaultCode('default-src.java', srcEditor);
+    loadDefaultCode('default-test.java', testEditor);
     assignRun();
-    assignDebugRefresh();
 
 </script>
 
