@@ -7,44 +7,40 @@
 <div id="logo">
     <a href="./">
         <img class="logo-img" src="logo.png">
-        <h1>kGenProg demo</h1>
+        <h1>kGenProg online demo</h1>
         <link rel="stylesheet" href="index.css">
     </a>
 </div>
 
-<span id="forkongithub"><a href="https://github.com/kusumotolab/kGenProg/">Fork me on GitHub</a></span>
-<div id="ctrl">
-    <input type="button" id="run" class="button button-run" value="Repair">
-    <input type="button" class="button button-other" value="Download">
-    <input type="button" id="refresh" class="button button-other" value="##refresh">
-</div>
-<br>
-<div class="editors">
-    <div class="editor">
-        <div class="header">Source</div>
-        <div id="src" class="ace"></div>
+<div id="container">
+    <span id="forkongithub"><a href="https://github.com/kusumotolab/kGenProg/">Fork me on GitHub</a></span>
+    <div id="ctrl">
+        <input type="button" id="run" class="button button-run" value="Repair">
+        <input type="button" class="button button-other" value="Download">
+        <input type="button" id="refresh" class="button button-other" value="##refresh">
     </div>
-    <div class="editor editor-right">
-        <div class="header">Test</div>
-        <div id="test" class="ace"></div>
+    <div class="editors">
+        <div class="editor">
+            <div class="header">Source</div>
+            <div id="src" class="ace"></div>
+        </div>
+        <div class="editor editor-right">
+            <div class="header">Test</div>
+            <div id="test" class="ace"></div>
+        </div>
     </div>
-</div>
 
-<div class="editors">
-    <div class="editor editor-console">
-        <div class="header">Console</div>
-        <div id="console" class="ace"></div>
+    <div class="editors">
+        <div class="editor editor-console">
+            <div class="header">Console</div>
+            <div id="console" class="ace"></div>
+        </div>
     </div>
 </div>
-
 
 </body>
 <script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
 <script>
-    // let src = ace.edit('src');
-    // let test = ace.edit('test');
-    // let console = ace.edit('console');
-
     const setupAce = function (key, readonly = false) {
         const editor = ace.edit(key);
         editor.setTheme('ace/theme/xcode');
@@ -54,9 +50,6 @@
             minLines: 25,
             maxLines: 25,
             printMargin: false,
-            animatedScroll: true,
-            scrollPastEnd: 0.5,
-            autoScrollEditorIntoView: true,
         });
 
         if (readonly) {
