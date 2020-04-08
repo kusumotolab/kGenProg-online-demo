@@ -15,9 +15,9 @@
 <div id="container">
     <span id="forkongithub"><a href="https://github.com/kusumotolab/kGenProg/">Fork me on GitHub</a></span>
     <div id="ctrl">
-        <input type="button" id="run" class="button button-run" value="Repair">
-        <input type="button" class="button button-other" value="Download">
-        <input type="button" id="refresh" class="button button-other" value="##refresh">
+        <button id="run" class="button button-run">Repair</button>
+        <button class="button button-other">Download</button>
+        <button id="refresh" class="button button-other">##refresh</button>
     </div>
     <div class="editors">
         <div class="editor">
@@ -37,6 +37,8 @@
         </div>
     </div>
 </div>
+
+
 
 </body>
 <script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -128,10 +130,7 @@
                 .then(checkFetchError)
                 .then(text => {
                     consoleEditor.setValue('');
-                    setTimeout(() => {
-                        refreshConsole(text.key);
-                    }, 500);
-
+                    refreshConsole(text.key);
                 })
                 .catch(err => console.error(err))
 

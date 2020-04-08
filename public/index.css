@@ -71,6 +71,7 @@ body {
 #logo:hover {
     background-color: #61616a;
 }
+
 #logo img {
     width: 60px;
 }
@@ -138,6 +139,17 @@ body {
 
 .button-other:hover {
 }
+
+
+.btn-circle span {
+    font-size: 18px;
+    text-align: center;
+    text-decoration: none;
+    -webkit-animation: spin 4s linear infinite;
+    -moz-animation: spin 4s linear infinite;
+    animation: spin 4s linear infinite;
+}
+
 
 /*--------------------------------------------------------------------------------*/
 #forkongithub a {
