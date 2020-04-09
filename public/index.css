@@ -1,6 +1,8 @@
-
-body {
+html {
     font-family: Verdana, sans-serif;
+    font-size: 14px;
+}
+body {
     background-color: #eeeeef;
     margin: 0;
 }
@@ -11,7 +13,7 @@ body {
 
 .editors {
     __width: 95%;
-    max-width: 800px;
+    max-width: 900px;
     margin-bottom: .5em;
 }
 
@@ -27,9 +29,9 @@ body {
 .editor .header {
     display: inline-block;
     font-family: arial, sans-serif;
-    font-size: 12px;
+
     padding: 0 2em;
-    line-height: 1.4rem;
+    line-height: 1.8rem;
     text-align: center;
     color: #fff;
     background-color: #61616a;
@@ -66,6 +68,7 @@ body {
     margin: 0;
     padding: .1em 1em;
     background-color: #343440;
+    height: 4rem;
 }
 
 #logo:hover {
@@ -77,11 +80,12 @@ body {
 }
 
 #logo h1 {
-    display: inline;
-    vertical-align: .8em;
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
     padding-left: .3em;
     font-family: arial, sans-serif;
-    font-size: larger;
+    font-size: x-large;
     font-weight: bold;
     color: #eeeeef;
 }
@@ -96,59 +100,51 @@ body {
     margin: 1em 0;
 }
 
-.button {
+.btn {
     border-radius: 8px;
     display: inline-block;
     cursor: pointer;
     color: #ffffff;;
     font-family: arial, sans-serif;
-    font-size: 13px;
+    font-size: 1.2rem;
     padding: 7px 24px;
     text-decoration: none;
     background: #3473af;
     border: none;
 }
 
-.button:hover:enabled {
+.btn:hover:enabled {
     -webkit-transform: translateY(-2px);
     transform: translateY(-2px);
     transition: .2s;
+    background-color: #0256a6;
 }
 
-.button:active {
+.btn:active {
     position: relative;
-    top: 1px;
+    top: 2px;
 }
 
-.button:focus {
+.btn:focus {
     -webkit-transform: none;
     outline: none;
     transform: none;
 }
 
-.button:disabled {
-    background-color: gray;
+.btn:disabled {
+    background-color: #7f8596;
 }
 
-.button-run {
-}
-
-
-.button-other {
-}
-
-.button-other:hover {
+.btn-run {
 }
 
 
-.btn-circle span {
-    font-size: 18px;
-    text-align: center;
-    text-decoration: none;
-    -webkit-animation: spin 4s linear infinite;
-    -moz-animation: spin 4s linear infinite;
-    animation: spin 4s linear infinite;
+.btn-other {
 }
+
+.btn-other:hover {
+}
+
 
 
 /*--------------------------------------------------------------------------------*/
@@ -160,16 +156,25 @@ body {
     text-align: center;
     font-weight: bold;
     padding: 5px 40px;
-    font-size: 1rem;
     line-height: 2rem;
     position: relative;
     __transition: 0.1s;
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+
+    width: 180px;
+    position: absolute;
+    top: 50px;
+    right: -60px;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
     z-index: 999;
 }
 
 #forkongithub a:hover {
-    background: #3b5c9e;
+    background: #3473af;
     color: #fff;
 }
 
@@ -189,27 +194,8 @@ body {
     top: auto;
 }
 
-@media screen and (min-width: 800px) {
+@media (max-width: 800px) {
     #forkongithub {
-        position: absolute;
-        display: block;
-        top: 0;
-        right: 0;
-        width: 200px;
-        overflow: hidden;
-        height: 200px;
-
-    }
-
-    #forkongithub a {
-        width: 180px;
-        position: absolute;
-        top: 50px;
-        right: -60px;
-        transform: rotate(45deg);
-        -webkit-transform: rotate(45deg);
-        -ms-transform: rotate(45deg);
-        -moz-transform: rotate(45deg);
-        -o-transform: rotate(45deg);
+        display: none;
     }
 }
