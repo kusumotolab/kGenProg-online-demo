@@ -73,7 +73,7 @@
     const testEditor = setupAce('test');
     const consoleEditor = setupAce('console', readonly = true);
 
-    const loadDefaultCode = function (uri, editor) {
+    const loadDefaultSrc = function (uri, editor) {
         fetch(uri)
             .then(resp => resp.text())
             .then(text => {
@@ -158,8 +158,8 @@
     };
 
 
-    loadDefaultCode('default-src.java', srcEditor);
-    loadDefaultCode('default-test.java', testEditor);
+    loadDefaultSrc('default-src.java', srcEditor);
+    loadDefaultSrc('default-test.java', testEditor);
     assignRun();
 
 </script>
