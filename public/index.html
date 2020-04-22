@@ -141,7 +141,7 @@
                 .then(checkFetchError)
                 .then(text => {
                     consoleEditor.setValue('');
-                    refreshConsole(text.key);
+                    refreshConsole(text.key); // TODO replace to ws
                     initWsConnection(text.key);
                 })
                 .catch(err => console.error(err))
