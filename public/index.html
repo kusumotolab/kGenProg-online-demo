@@ -113,7 +113,7 @@
     };
 
     const initWsConnection = function (key) {
-        const ws = new WebSocket('ws://' + window.location.hostname + '/' + key);
+        const ws = new WebSocket('ws://' + window.location.host + '/' + key);
         ws.onmessage = function (message) {
             console.log(message);
         }
