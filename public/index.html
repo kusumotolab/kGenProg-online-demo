@@ -123,10 +123,6 @@
         document.querySelector('#run').addEventListener('click', () => {
             let src = srcEditor.getValue();
             let test = testEditor.getValue();
-            src = src.replace("&gt;", ">");
-            src = src.replace("&lt;", "<");
-            test = test.replace("&gt;", ">");
-            test = test.replace("&lt;", "<");
             const data = {src: src, test: test};
 
             disableExecButton();
