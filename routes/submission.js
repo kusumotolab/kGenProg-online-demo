@@ -50,12 +50,21 @@ function closeKgp(spawn, dir) {
 }
 
 function writeStdout(spawn, dir) {
+  const ws = require('../app').wsConnections.get(path.basename(dir));
   const stdout = path.join(dir, 'stdout.txt');
   spawn.stdout.on('data', (data) => {
     fs.appendFile(stdout, data).catch(err => console.error(err));
+    ws.send(JSON.stringify({
+      key: path.basename(dir),
+      stdout: data
+    }))
   });
   spawn.stderr.on('data', (data) => {
     fs.appendFile(stdout, data).catch(err => console.error(err));
+    ws.send(JSON.stringify({
+      key: path.basename(dir),
+      stdout: data
+    }))
   });
 }
 
@@ -77,6 +86,7 @@ function createKey(req) {
 
 function acceptSubmission(req, res) {
   const key = createKey(req);
+  wss.emit()
   console.log(`[${key}]`, 'accept submission');
   res.header('Content-Type', 'application/json; charset=utf-8');
   res.send({
