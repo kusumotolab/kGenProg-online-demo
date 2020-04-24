@@ -10,7 +10,7 @@ function readStdout(key) {
 }
 
 async function sendStatus(res, key) {
-  const processing = require('./submission').processing;
+  const processing = require('./ws').processing;
   const stdout = await readStdout(key);
   const status = processing.includes(key) ? 'processing' : 'done';
   res.header('Content-Type', 'application/json; charset=utf-8');

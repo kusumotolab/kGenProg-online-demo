@@ -4,7 +4,8 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const app = express();
-const expressWs = require('express-ws')(app);
+const server = require('http').Server(app);
+const expressWs = require('express-ws')(app, server);
 const submissionRouter = require('./routes/submission');
 const statusRouter = require('./routes/status');
 const wsRouter = require('./routes/ws');
@@ -39,5 +40,4 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
-module.exports.wsConnections = wsConnections;
+module.exports = {app: app, server: server};

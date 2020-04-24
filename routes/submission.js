@@ -3,7 +3,6 @@ const router = express.Router();
 const path = require('path');
 const fs = require('fs').promises;
 const submissionBase = path.resolve('./tmp/kgp-od');
-const processing = Array();
 
 async function deploy(file, data) {
   await fs.mkdir(path.dirname(file), {recursive: true});
@@ -33,48 +32,6 @@ function deployConfig(dir, body) {
     deploy(test, body.test)], deploy(stdout, ''));
 }
 
-function execJava(dir) {
-  const child = require('child_process');
-  const kgp = path.resolve('./bin/kgp.jar');
-  return child.spawn('java',
-      ['-jar', kgp, '-r', './', '-s', 'src/main', '-t', 'src/test'],
-      {cwd: dir});
-}
-
-function closeKgp(spawn, dir) {
-  spawn.on('close', (code) => {
-    console.log(`[${path.basename(dir)}]`, 'kgp finish with code', code);
-    const index = processing.findIndex(e => e === path.dirname(dir));
-    processing.splice(index, 1);
-  });
-}
-
-function writeStdout(spawn, dir) {
-  const ws = require('../app').wsConnections.get(path.basename(dir));
-  const stdout = path.join(dir, 'stdout.txt');
-  spawn.stdout.on('data', (data) => {
-    fs.appendFile(stdout, data).catch(err => console.error(err));
-    ws.send(JSON.stringify({
-      key: path.basename(dir),
-      stdout: data
-    }))
-  });
-  spawn.stderr.on('data', (data) => {
-    fs.appendFile(stdout, data).catch(err => console.error(err));
-    ws.send(JSON.stringify({
-      key: path.basename(dir),
-      stdout: data
-    }))
-  });
-}
-
-function runKgp(dir) {
-  const spawn = execJava(dir);
-  writeStdout(spawn, dir);
-  closeKgp(spawn, dir);
-  processing.push(path.basename(dir));
-}
-
 function createKey(req) {
   const crypto = require('crypto');
   require('date-utils');
@@ -86,7 +43,6 @@ function createKey(req) {
 
 function acceptSubmission(req, res) {
   const key = createKey(req);
-  wss.emit()
   console.log(`[${key}]`, 'accept submission');
   res.header('Content-Type', 'application/json; charset=utf-8');
   res.send({
@@ -101,12 +57,10 @@ router.post('/', async (req, res) => {
   try {
     const submissionDir = acceptSubmission(req, res);
     await deployConfig(submissionDir, req.body);
-    runKgp(submissionDir);
   } catch (err) {
     console.error(err);
   }
 });
 
 module.exports = router;
-module.exports.processing = processing;
 module.exports.submissionBase = submissionBase;
