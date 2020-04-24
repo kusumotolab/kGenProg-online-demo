@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <title>kGenProg demo</title>
+    <!-- todo: temporary disable favicon request -->
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
 </head>
 <body>
 <div id="logo">
@@ -92,30 +94,15 @@
         document.querySelector('#run').disabled = true;
     };
 
-    const refreshConsole = function (key) {
-        fetch('./api/status/' + key)
-            .then(checkFetchError)
-            .then(text => {
-                consoleEditor.setValue(text.stdout);
-                consoleEditor.clearSelection();
-                consoleEditor.scrollToLine(consoleEditor.getValue().length);
-
-                if (text.status === 'done') {
-                    enableExecButton();
-                    return;
-                }
-                setTimeout(() => {
-                    refreshConsole(key);
-                }, 1000);
-
-            })
-            .catch(err => console.error(err));
-    };
-
     const initWsConnection = function (key) {
         const ws = new WebSocket('ws://' + window.location.host + '/' + key);
         ws.onmessage = function (message) {
-            console.log(message);
+            const data = JSON.parse(message.data);
+            consoleEditor.insert(data.stdout);
+            consoleEditor.gotoLine(consoleEditor.getSession().getLength());
+        }
+        ws.onclose = function() {
+            enableExecButton();
         }
     }
 
@@ -137,7 +124,6 @@
                 .then(checkFetchError)
                 .then(text => {
                     consoleEditor.setValue('');
-                    refreshConsole(text.key); // TODO replace to ws
                     initWsConnection(text.key);
                 })
                 .catch(err => console.error(err))
