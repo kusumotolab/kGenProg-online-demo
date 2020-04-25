@@ -14,11 +14,12 @@ function execJava(key) {
       {cwd: dir});
 }
 
-function closeKgp(spawn, key) {
+function closeKgp(spawn, key, ws) {
   spawn.on('close', (code) => {
     console.log(`[${key}]`, 'kgp finish with code', code);
     const index = processing.findIndex(e => e === key);
     processing.splice(index, 1);
+    ws.close();
   });
 }
 
@@ -44,7 +45,7 @@ function writeStdout(spawn, key , ws) {
 function runKgp(key, ws) {
   const spawn = execJava(key);
   writeStdout(spawn, key, ws);
-  closeKgp(spawn, key);
+  closeKgp(spawn, key, ws);
   processing.push(key);
 }
 
@@ -52,6 +53,7 @@ router.ws("/:key", (ws, req) => {
   const key = req.params.key;
   console.log(`[${key}]`, "connected websocket");
   runKgp(key, ws);
+  ws.on('close', () => console.log(`[${key}]`, "closed websocket"))
 });
 
 module.exports = router;
