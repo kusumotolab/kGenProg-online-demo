@@ -1,24 +1,14 @@
-FROM openjdk:11
+FROM node:12-alpine
 
-WORKDIR /tmp/kdemo
+WORKDIR /kdemo
 
-#RUN add-apt-repository ppa:openjdk-r/ppa
-
-#RUN apt-get update
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
-RUN apt-get install -y nodejs
-
-COPY . .
+RUN apk --no-cache add openjdk11-jre-headless wget
+RUN mkdir -p /kdemo/bin \
+        && wget https://github.com/kusumotolab/kGenProg/releases/download/nightly-build/kGenProg-nightly-build.jar -O /kdemo/bin/kgp.jar \
+	      && apk del --purge wget
+	
+COPY package*.json /kdemo/
 RUN npm install
-
-RUN wget https://github.com/kusumotolab/kGenProg/releases/download/nightly-build/kGenProg-nightly-build.jar -O bin/kgp.jar
-
+COPY . /kdemo
 EXPOSE 3000
 CMD [ "npm", "start" ]
-
-#CMD ["ls", "bin"]
-#CMD ["java", "--version"]
-
-# git
-# mpm
-# java
