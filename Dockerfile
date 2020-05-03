@@ -8,7 +8,7 @@ RUN mkdir -p /kdemo/bin \
 	      && apk del --purge wget
 	
 COPY package*.json /kdemo/
-RUN npm install
+RUN npm install --only=production
 COPY . /kdemo
 EXPOSE 3000
 CMD [ "npm", "start" ]
