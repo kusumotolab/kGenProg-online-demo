@@ -10,7 +10,8 @@ function execJava(key) {
   const child = require('child_process');
   const kgp = path.resolve('./bin/kgp.jar');
   return child.spawn('java',
-      ['-jar', kgp, '-r', './', '-s', 'src/main', '-t', 'src/test'],
+      ['-jar', kgp, '-r', './', '-s', 'src/main', '-t', 'src/test',
+        '--max-generation', '1000', '--time-limit', '300'],
       {cwd: dir});
 }
 
@@ -30,7 +31,7 @@ function wsSend(key, data, ws) {
   }));
 }
 
-function writeStdout(spawn, key , ws) {
+function writeStdout(spawn, key, ws) {
   const stdout = path.join(submissionBase, key, 'stdout.txt');
   spawn.stdout.on('data', (data) => {
     fs.appendFile(stdout, data).catch(err => console.error(err));
