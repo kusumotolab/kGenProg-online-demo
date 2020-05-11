@@ -31,6 +31,13 @@ function wsSend(key, data, ws) {
   }));
 }
 
+function wsOnerror(spawn, key, ws) {
+  ws.on('close', () => {
+    spawn.kill();
+    console.log(`[${key}]`, "closed websocket");
+  });
+}
+
 function writeStdout(spawn, key, ws) {
   const stdout = path.join(submissionBase, key, 'stdout.txt');
   spawn.stdout.on('data', (data) => {
@@ -45,16 +52,16 @@ function writeStdout(spawn, key, ws) {
 
 function runKgp(key, ws) {
   const spawn = execJava(key);
+  processing.push(key);
   writeStdout(spawn, key, ws);
   closeKgp(spawn, key, ws);
-  processing.push(key);
+  wsOnerror(spawn, key, ws);
 }
 
 router.ws("/:key", (ws, req) => {
   const key = req.params.key;
   console.log(`[${key}]`, "connected websocket");
   runKgp(key, ws);
-  ws.on('close', () => console.log(`[${key}]`, "closed websocket"))
 });
 
 module.exports = router;
