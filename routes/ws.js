@@ -31,7 +31,7 @@ function wsSend(key, data, ws) {
   }));
 }
 
-function wsOnerror(spawn, key, ws) {
+function wsOnclose(spawn, key, ws) {
   ws.on('close', () => {
     spawn.kill();
     console.log(`[${key}]`, "closed websocket");
@@ -55,7 +55,7 @@ function runKgp(key, ws) {
   processing.push(key);
   writeStdout(spawn, key, ws);
   closeKgp(spawn, key, ws);
-  wsOnerror(spawn, key, ws);
+  wsOnclose(spawn, key, ws);
 }
 
 router.ws("/:key", (ws, req) => {
