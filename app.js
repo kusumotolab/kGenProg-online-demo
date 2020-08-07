@@ -8,6 +8,7 @@ const server = require('http').Server(app);
 const expressWs = require('express-ws')(app, server);
 const submissionRouter = require('./routes/submission');
 const statusRouter = require('./routes/status');
+const downloadRouter = require('./routes/download');
 const wsRouter = require('./routes/ws');
 
 // view engine setup
@@ -22,6 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/submission', submissionRouter);
 app.use('/api/status', statusRouter);
+app.use('/api/download', downloadRouter);
 app.use('/', wsRouter);
 
 // catch 404 and forward to error handler
