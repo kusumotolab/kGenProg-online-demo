@@ -21,14 +21,8 @@ async function sendStatus(res, key) {
   });
 }
 
-router.get('/:key', async (req, res) => {
-  try {
-    await sendStatus(res, req.params.key);
-  } catch (err) {
-    res.status(err.status || 500);
-    res.render(req.params.key);
-    console.error(err);
-  }
+router.get('/:key', (req, res) => {
+  sendStatus(res, req.params.key).catch(err => console.error(err));
 });
 
 module.exports = router;
