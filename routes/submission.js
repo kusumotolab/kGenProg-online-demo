@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const fs = require('fs').promises;
-const submissionBase = path.resolve('./tmp/kdemo');
+const submissionBase = path.resolve('./tmp/submission');
 
 async function deploy(file, data) {
   await fs.mkdir(path.dirname(file), {recursive: true});
