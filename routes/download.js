@@ -12,9 +12,13 @@ async function createArchive(key) {
   const output = fs.createWriteStream(path.join(archiveBase, `${key}.zip`));
   const archive = archiver('zip', {zlib: {level: 6}});
   archive.pipe(output);
-  archive.directory(path.join(submissionBase, key))
-      .file(kgp)
+  archive.directory(path.join(submissionBase, key), false)
+      .file(kgp, {name: 'kgp.jar'})
       .finalize();
+  return new Promise((resolve, reject) => {
+    output.on('close', () => resolve(archive));
+    archive.on('error', (err) => reject(err));
+  });
 }
 
 async function exportArchive(res, key) {
