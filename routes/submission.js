@@ -72,13 +72,9 @@ function acceptSubmission(req, res) {
   return path.join(submissionBase, key);
 }
 
-router.post('/', async (req, res) => {
-  try {
-    const submissionDir = acceptSubmission(req, res);
-    await deployConfig(submissionDir, req.body);
-  } catch (err) {
-    console.error(err);
-  }
+router.post('/', (req, res) => {
+  const submissionDir = acceptSubmission(req, res);
+  deployConfig(submissionDir, req.body).catch(err => console.error(err))
 });
 
 module.exports = router;
