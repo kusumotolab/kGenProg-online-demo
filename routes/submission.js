@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const path = require('path');
-const fs = require('fs').promises;
+const fs = require('fs');
 const submissionBase = path.resolve('./tmp/submission');
 
 async function deploy(file, data) {
-  await fs.mkdir(path.dirname(file), {recursive: true});
-  await fs.writeFile(file, data);
+  await fs.promises.mkdir(path.dirname(file), {recursive: true});
+  await fs.promises.writeFile(file, data);
 }
 
 function getPackageName(src) {
@@ -24,10 +24,29 @@ function getFQN(src) {
       getClassName(src) + '.java');
 }
 
+function createToml(dir) {
+  const toml = path.join(dir, 'kgenprog.toml');
+  const config = 'root-dir = "./"\n'
+      + 'src = ["src/main"]\n'
+      + 'test = ["src/test"]\n'
+      + 'max-generation = 1000\n'
+      + 'time-limit = 300';
+  deploy(toml, config);
+}
+
+function createShellScript(dir) {
+  const sh = path.join(dir, 'run.sh');
+  const script = '#!/bin/sh\n\n'
+      + 'java -jar kgp.jar --config kgenprog.toml';
+  deploy(sh, script);
+}
+
 function deployConfig(dir, body) {
   const src = path.join(dir, 'src/main', getFQN(body.src));
   const test = path.join(dir, 'src/test', getFQN(body.test))
   const stdout = path.join(dir, 'stdout.txt');
+  createToml(dir);
+  createShellScript(dir);
   return Promise.all([deploy(src, body.src),
     deploy(test, body.test)], deploy(stdout, ''));
 }
