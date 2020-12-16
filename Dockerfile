@@ -8,7 +8,7 @@ RUN apk --no-cache add \
 COPY . /kdemo
 RUN npm install --only=production
 
-ARG KGPVER=1.7.0
+ARG KGPVER=1.8.0
 ARG KGPJAR=https://github.com/kusumotolab/kGenProg/releases/download/v${KGPVER}/kGenProg-${KGPVER}.jar
 RUN mkdir -p /kdemo/bin && \
     wget ${KGPJAR} -O /kdemo/bin/kgp.jar && \
