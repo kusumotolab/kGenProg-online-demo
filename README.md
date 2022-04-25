@@ -1,7 +1,7 @@
 # about
 Try [kGenProg](https://github.com/kusumotolab/kGenProg) on your browser.
 
-http://tyr.ics.es.osaka-u.ac.jp/kdemo
+https://tyr.ics.es.osaka-u.ac.jp/kdemo
 
 
 # how to setup demo server
