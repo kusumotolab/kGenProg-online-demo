@@ -95,7 +95,8 @@
     };
 
     const initWsConnection = function (key) {
-        const ws = new WebSocket('ws://' + window.location.host + '/' + key);
+        const wsproto = location.protocol === 'https:' ? 'wss' : 'ws';
+        const ws = new WebSocket(wsproto + '://' + window.location.host + window.location.pathname + '/' + key);
         ws.onmessage = function (message) {
             const data = JSON.parse(message.data);
             consoleEditor.insert(data.stdout);
